@@ -20,6 +20,14 @@ file_save = []
 
 scanned = []
 
+try:
+    file = open('logs.txt','r')
+    dane = file.read()
+    file.close()
+    print(dane)
+except:
+    pass
+
 
 def save_logs():
     global scanned, dane, dane_scaned, file_save
@@ -67,12 +75,12 @@ def odczyt():
     global Camera_read
     Camera_read = True
     ### odczyt kodów QR z kamery
+
     read_QR()
 
 def generuj():
     global Camera_read
     Camera_read = False
-
 
 ### tworzenie okna
 
@@ -81,16 +89,34 @@ root = Tk()
 root.geometry('500x500')
 root.title('QR Manager')
 
+Teskst_QR = tk.Entry(root,bg='black')
+Teskst_QR.place(x=0,y=0)
+
 Cam_view = tk.Label(root)
 Cam_view.place(x=0,y=0)
 
 code_info = tk.Label(root)
-code_info.place(x=0,y=301)
+code_info.place(x=0,y=303)
 
-Odczytbtn = tk.Button(root,text='Odczyt kodu',command=odczyt)
+#### widgets for generating qr code
+
+klient_ent = tk.Entry(root,width=50)
+klient_ent.place(x=100,y=370)
+
+klient_lbl = tk.Label(root,text='Dane klienta')
+klient_lbl.place(x=0,y=370)
+
+promotor_ent = tk.Entry(root,width=50)
+promotor_ent.place(x=100,y=400)
+
+promotor_lbl = tk.Label(root,text='Dane promotora')
+promotor_lbl.place(x=0,y=400)
+
+
+Odczytbtn = tk.Button(root,text='Włącz skaner',command=odczyt)
 Odczytbtn.place(x=301,y=0)
 
-Generujbtn = tk.Button(root,text='Generowanie',command=generuj)
+Generujbtn = tk.Button(root,text='Wyłącz skaner',command=generuj)
 Generujbtn.place(x=401,y=0)
 
 cap = cv2.VideoCapture(0)
