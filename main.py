@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import numpy as np
 import pyzbar.pyzbar as pyzbar
 import datetime
+import qrcode
 import time
 import cv2
 import os
@@ -15,6 +16,7 @@ width, height = 300,300
 dane = ''
 dane_scaned = ''
 data_ = ''
+zapis_qr = ''
 
 file_save = []
 
@@ -28,6 +30,20 @@ try:
 except:
     pass
 
+
+def check_if_string_in_file(file_name, string_to_search):
+
+    try:
+
+        with open(file_name, 'r') as read_obj:
+
+            for line in read_obj:
+
+                if string_to_search in line:
+                    return True
+        return False
+    except:
+        pass
 
 def save_logs():
     global scanned, dane, dane_scaned, file_save
@@ -52,6 +68,7 @@ def read_QR():
         img = cv2.flip(frame,1)
         img = cv2.resize(img,(width,height))
         img1 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+        # img1 = cv2.Canny(img1, 100, 100)
         img = ImageTk.PhotoImage(Image.fromarray(img1))
         Cam_view['image'] = img
 
@@ -59,7 +76,7 @@ def read_QR():
             decode_obj = pyzbar.decode(frame)
 
             for obj in decode_obj:
-                if obj.data in scanned:
+                if obj.data in scanned or check_if_string_in_file('logs.txt', str(obj.data)):
                     code_info.configure(text='kod został już użyty')
                 else:
                     code_info.configure(text=obj.data)
@@ -78,15 +95,24 @@ def odczyt():
 
     read_QR()
 
-def generuj():
+def wylacz_cam():
     global Camera_read
     Camera_read = False
+
+def generuj():
+    global zapis_qr
+
+    zapis_qr = 'KLIENT: ' + klient_ent.get() + ' PROMOTOR:' + promotor_ent.get()
+    nazwa = klient_ent.get() + '.png'
+
+    qr = qrcode.make(zapis_qr)
+    qr.save(str(nazwa))
 
 ### tworzenie okna
 
 root = Tk()
 
-root.geometry('500x500')
+root.geometry('800x500')
 root.title('QR Manager')
 
 Teskst_QR = tk.Entry(root,bg='black')
@@ -112,12 +138,14 @@ promotor_ent.place(x=100,y=400)
 promotor_lbl = tk.Label(root,text='Dane promotora')
 promotor_lbl.place(x=0,y=400)
 
-
 Odczytbtn = tk.Button(root,text='Włącz skaner',command=odczyt)
 Odczytbtn.place(x=301,y=0)
 
-Generujbtn = tk.Button(root,text='Wyłącz skaner',command=generuj)
-Generujbtn.place(x=401,y=0)
+Wylaczbtn = tk.Button(root,text='Wyłącz skaner',command=wylacz_cam)
+Wylaczbtn.place(x=401,y=0)
+
+Generujbtn = tk.Button(root,text='Generuj',command=generuj)
+Generujbtn.place(x=0,y=430)
 
 cap = cv2.VideoCapture(0)
 
