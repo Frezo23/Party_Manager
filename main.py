@@ -12,15 +12,31 @@ Capture_code = True
 Camera_read = True
 width, height = 300,300
 
+dane = ''
+dane_scaned = ''
+data_ = ''
+
+file_save = []
+
 scanned = []
 
 
 def save_logs():
-    global scanned
+    global scanned, dane, dane_scaned, file_save
 
+    print(dane_scaned)
+    print(scanned)
+
+    data_ = datetime.datetime.now()
+
+    dane =  dane + '[' + str(data_) + ']' + ' ' + str(dane_scaned) + '\n'
+    print(dane)
+
+    file = open('logs.txt', 'w')
+    file.write(str(dane))
 
 def read_QR():
-    global Camera_read, scanned
+    global Camera_read, scanned, dane_scaned
     ### odczyt kodów QR z kamery
 
     while Camera_read == True:
@@ -40,6 +56,8 @@ def read_QR():
                 else:
                     code_info.configure(text=obj.data)
                     scanned.append(obj.data)
+                    dane_scaned = str(scanned[len(scanned) - 1])
+                    save_logs()
                     time.sleep(2)
 
         root.update()
@@ -61,7 +79,7 @@ def generuj():
 root = Tk()
 
 root.geometry('500x500')
-root.title('Party Manage')
+root.title('QR Manager')
 
 Cam_view = tk.Label(root)
 Cam_view.place(x=0,y=0)
