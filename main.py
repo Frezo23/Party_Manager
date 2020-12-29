@@ -3,13 +3,60 @@ from tkinter import *
 from PIL import Image, ImageTk
 import numpy as np
 import pyzbar.pyzbar as pyzbar
+import datetime
+import time
 import cv2
+import os
 
 Capture_code = True
+Camera_read = True
 width, height = 300,300
 
 scanned = []
 
+
+def save_logs():
+    global scanned
+
+
+def read_QR():
+    global Camera_read, scanned
+    ### odczyt kodów QR z kamery
+
+    while Camera_read == True:
+        frame = cap.read()[1]
+        img = cv2.flip(frame,1)
+        img = cv2.resize(img,(width,height))
+        img1 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+        img = ImageTk.PhotoImage(Image.fromarray(img1))
+        Cam_view['image'] = img
+
+        if Capture_code == True:
+            decode_obj = pyzbar.decode(frame)
+
+            for obj in decode_obj:
+                if obj.data in scanned:
+                    code_info.configure(text='kod został już użyty')
+                else:
+                    code_info.configure(text=obj.data)
+                    scanned.append(obj.data)
+                    time.sleep(2)
+
+        root.update()
+
+
+def odczyt():
+    global Camera_read
+    Camera_read = True
+    ### odczyt kodów QR z kamery
+    read_QR()
+
+def generuj():
+    global Camera_read
+    Camera_read = False
+
+
+### tworzenie okna
 
 root = Tk()
 
@@ -19,26 +66,21 @@ root.title('Party Manage')
 Cam_view = tk.Label(root)
 Cam_view.place(x=0,y=0)
 
+code_info = tk.Label(root)
+code_info.place(x=0,y=301)
+
+Odczytbtn = tk.Button(root,text='Odczyt kodu',command=odczyt)
+Odczytbtn.place(x=301,y=0)
+
+Generujbtn = tk.Button(root,text='Generowanie',command=generuj)
+Generujbtn.place(x=401,y=0)
+
 cap = cv2.VideoCapture(0)
 
-while True:
-    frame = cap.read()[1]
-    img = cv2.flip(frame,1)
-    img = cv2.resize(img,(width,height))
-    img1 = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    img = ImageTk.PhotoImage(Image.fromarray(img1))
-    Cam_view['image'] = img
 
-    if Capture_code == True:
-        decode_obj = pyzbar.decode(frame)
+### odczyt kodów QR z kamery
 
-        for obj in decode_obj:
-            if obj.data in scanned:
-                print('Ten kod został już użyty')
-            else:
-                print(obj.data)
-                scanned.append(obj.data)
-
-    root.update()
+while Camera_read == True:
+    read_QR()
 
 root.mainloop()
