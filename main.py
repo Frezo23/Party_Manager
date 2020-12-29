@@ -20,8 +20,8 @@ data_ = ''
 zapis_qr = ''
 
 file_save = []
-
 scanned = []
+files_for_list = []
 
 try:
     file = open('logs.txt','r')
@@ -50,12 +50,23 @@ def save_logs():
     print(scanned)
 
     data_ = datetime.datetime.now()
-
     dane =  dane + '[' + str(data_) + ']' + ' ' + str(dane_scaned) + '\n'
     print(dane)
 
     file = open('logs.txt', 'w')
     file.write(str(dane))
+
+    odczytanie_plik()
+
+def odczytanie_plik():
+    global files_for_list
+
+    try:
+        file = open('logs.txt', 'r')
+        f = file.read()
+        files_for_list = f.split('\n')
+    except:
+        pass
 
 def read_QR():
     global Camera_read, scanned, dane_scaned
@@ -124,8 +135,8 @@ Cam_view.place(x=0,y=0)
 code_info = tk.Label(root)
 code_info.place(x=0,y=303)
 
-dane_list_box = tk.Listbox(root,width=40,height=30)
-dane_list_box.place(x=305,y=50)
+dane_list_box = tk.Listbox(root,width=80,height=15,yscrollcommand=True,xscrollcommand=True)
+dane_list_box.place(x=305,y=60)
 
 #### widgets for generating qr code
 
