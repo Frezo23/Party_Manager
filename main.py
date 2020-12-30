@@ -18,10 +18,12 @@ dane = ''
 dane_scaned = ''
 data_ = ''
 zapis_qr = ''
+a = 0
 
 file_save = []
 scanned = []
 files_for_list = []
+copy_files_list = []
 
 try:
     file = open('logs.txt','r')
@@ -43,6 +45,25 @@ def check_if_string_in_file(file_name, string_to_search):
     except:
         pass
 
+def odczytanie_plik():
+    global files_for_list, a, copy_files_list
+    a = 0
+
+    log_file = open('logs.txt', 'r')
+    files_for_list = log_file.readlines()
+
+    # copy_files_list = files_for_list
+
+    try:
+        dane_list_box.delete(1,dane_list_box.size())
+    except:
+        pass
+
+    for i in range(len(files_for_list)):
+        dane_list_box.insert(END,files_for_list[a])
+        a += 1
+
+
 def save_logs():
     global scanned, dane, dane_scaned, file_save
 
@@ -55,18 +76,9 @@ def save_logs():
 
     file = open('logs.txt', 'w')
     file.write(str(dane))
+    file.close()
 
     odczytanie_plik()
-
-def odczytanie_plik():
-    global files_for_list
-
-    try:
-        file = open('logs.txt', 'r')
-        f = file.read()
-        files_for_list = f.split('\n')
-    except:
-        pass
 
 def read_QR():
     global Camera_read, scanned, dane_scaned
@@ -135,7 +147,7 @@ Cam_view.place(x=0,y=0)
 code_info = tk.Label(root)
 code_info.place(x=0,y=303)
 
-dane_list_box = tk.Listbox(root,width=80,height=15,yscrollcommand=True,xscrollcommand=True)
+dane_list_box = tk.Listbox(root,width=80,height=15)
 dane_list_box.place(x=305,y=60)
 
 #### widgets for generating qr code
@@ -163,6 +175,7 @@ Generujbtn.place(x=0,y=430)
 
 cap = cv2.VideoCapture(0)
 
+odczytanie_plik()
 
 ### odczyt kodów QR z kamery
 
