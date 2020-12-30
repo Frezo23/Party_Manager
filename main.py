@@ -3,7 +3,7 @@ from tkinter import *
 from PIL import Image, ImageTk
 import numpy as np
 import pyzbar.pyzbar as pyzbar
-import datetime
+from datetime import datetime
 import qrcode
 import time
 import sys
@@ -48,21 +48,22 @@ def check_if_string_in_file(file_name, string_to_search):
 def odczytanie_plik():
     global files_for_list, a, copy_files_list
     a = 0
-
-    log_file = open('logs.txt', 'r')
-    files_for_list = log_file.readlines()
-
-    # copy_files_list = files_for_list
-
     try:
-        dane_list_box.delete(1,dane_list_box.size())
+        log_file = open('logs.txt', 'r')
+        files_for_list = log_file.readlines()
+
+        # copy_files_list = files_for_list
+
+        try:
+            dane_list_box.delete(1,dane_list_box.size())
+        except:
+            pass
+
+        for i in range(len(files_for_list)):
+            dane_list_box.insert(END,files_for_list[a])
+            a += 1
     except:
         pass
-
-    for i in range(len(files_for_list)):
-        dane_list_box.insert(END,files_for_list[a])
-        a += 1
-
 
 def save_logs():
     global scanned, dane, dane_scaned, file_save
@@ -70,7 +71,8 @@ def save_logs():
     print(dane_scaned)
     print(scanned)
 
-    data_ = datetime.datetime.now()
+    data_ = datetime.now()
+    data_ = data_.strftime('%Y-%d-%m|%H:%M:%S')
     dane =  dane + '[' + str(data_) + ']' + ' ' + str(dane_scaned) + '\n'
     print(dane)
 
